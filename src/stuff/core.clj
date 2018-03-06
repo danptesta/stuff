@@ -1,9 +1,13 @@
 (ns stuff.core
+  (:require [stuff.item.model :as items])
   (:require [ring.adapter.jetty :as jetty]
+            [ring.middleware.params :refer [wrap-params]]
             [ring.middleware.reload :refer [wrap-reload]]
             [ring.handler.dump :refer [handle-dump]]
-            [compojure.core :refer [defroutes GET]]
+            [compojure.core :refer [defroutes ANY GET POST PUT DELETE]]
             [compojure.route :refer [not-found]]))
+
+(def db "jdbc:postgresql://localhost/stuff")
 
 (defn greet [req]
   {:status 200
@@ -42,7 +46,15 @@
        :body (str "Unknown operator: " op)
        :headers {}})))
 
-(defroutes app
+(defn wrap-server [hdlr]
+  (fn [req]
+    (assoc-in (hdlr req) [:headers "Server"] "Stuffmaster 9000")))
+
+(defn wrap-db [hdlr]
+  (fn [req]
+    (hdlr (assoc req :stuff/db db))))
+
+(defroutes routes
   (GET "/" [] greet)
   (GET "/goodbye" [] goodbye)
   (GET "/about" [] about)
@@ -51,6 +63,13 @@
   (GET "/calc/:a/:op/:b" [] calc)
   (not-found "Sorry, page not found."))
 
+(def app
+  (wrap-server
+   (wrap-db
+    (wrap-params
+     routes))))
+
 (defn -main [port]
+  (items/create-table db)
   (jetty/run-jetty app
                    {:port (Integer. port)}))
