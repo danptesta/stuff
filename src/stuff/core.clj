@@ -1,11 +1,15 @@
 (ns stuff.core
-  (:require [stuff.item.model :as items])
-  (:require [ring.adapter.jetty :as jetty]
+  (:require [stuff.item.model :as items]
+            [stuff.item.handler :refer [handle-index-items
+                                        handle-create-item]])
+  (:require [compojure.core :refer [defroutes ANY GET POST PUT DELETE]]
+            [compojure.route :refer [not-found]]
+            [ring.adapter.jetty :as jetty]
+            [ring.handler.dump :refer [handle-dump]]
+            [ring.middleware.file-info :refer [wrap-file-info]]
             [ring.middleware.params :refer [wrap-params]]
             [ring.middleware.reload :refer [wrap-reload]]
-            [ring.handler.dump :refer [handle-dump]]
-            [compojure.core :refer [defroutes ANY GET POST PUT DELETE]]
-            [compojure.route :refer [not-found]]))
+            [ring.middleware.resource :refer [wrap-resource]]))
 
 (def db "jdbc:postgresql://localhost/stuff")
 
@@ -58,16 +62,22 @@
   (GET "/" [] greet)
   (GET "/goodbye" [] goodbye)
   (GET "/about" [] about)
-  (GET "/request" [] handle-dump)
+  (ANY "/request" [] handle-dump)
   (GET "/yo/:name" [] yo)
   (GET "/calc/:a/:op/:b" [] calc)
+  (GET "/items" [] handle-index-items)
+  (POST "/items" [] handle-create-item)
+
   (not-found "Sorry, page not found."))
 
 (def app
   (wrap-server
-   (wrap-db
-    (wrap-params
-     routes))))
+   (wrap-file-info
+    (wrap-resource
+     (wrap-db
+      (wrap-params
+       routes))
+     "static"))))
 
 (defn -main [port]
   (items/create-table db)
