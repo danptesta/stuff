@@ -1,7 +1,10 @@
 (ns stuff.core
   (:require [stuff.item.model :as items]
             [stuff.item.handler :refer [handle-index-items
-                                        handle-create-item]])
+                                        handle-create-item]]
+            [stuff.user.model :as users]
+            [stuff.user.handler :refer [handle-index-users
+                                        handle-create-user]])
   (:require [compojure.core :refer [defroutes ANY GET POST PUT DELETE]]
             [compojure.route :refer [not-found]]
             [ring.adapter.jetty :as jetty]
@@ -25,7 +28,7 @@
 
 (defn about [req]
   {:status 200
-   :body "Welcome to the stuffmaster app, created by Dan Testa!  I'm using this app to explore the world of clojure."})
+   :body "Welcome to the Stuffmaster app, created by Dan Testa!  I'm using this app to explore the world of clojure."})
 
 (defn yo [req]
   {:status 200
@@ -65,8 +68,12 @@
   (ANY "/request" [] handle-dump)
   (GET "/yo/:name" [] yo)
   (GET "/calc/:a/:op/:b" [] calc)
+
   (GET "/items" [] handle-index-items)
   (POST "/items" [] handle-create-item)
+
+  (GET "/users" [] handle-index-users)
+  (POST "/users" [] handle-create-user)
 
   (not-found "Sorry, page not found."))
 
@@ -81,5 +88,6 @@
 
 (defn -main [port]
   (items/create-table db)
+  (users/create-table db)
   (jetty/run-jetty app
                    {:port (Integer. port)}))
