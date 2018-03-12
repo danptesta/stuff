@@ -9,17 +9,19 @@
    db
    ["CREATE TABLE IF NOT EXISTS items
        (id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        user_id UUID REFERENCES USERS(id),
         name TEXT NOT NULL,
         description TEXT NOT NULL,
         checked_out BOOLEAN NOT NULL DEFAULT FALSE,
         date_created TIMESTAMPTZ NOT NULL DEFAULT now())"]))
 
-(defn create-item [db name description]
+(defn create-item [db userid name description]
   (:id (first (db/query
                db
-               ["INSERT INTO items (name, description)
-                 VALUES (?, ?)
+               ["INSERT INTO items (user_id, name, description)
+                 VALUES (?, ?, ?)
                  RETURNING id"
+                (java.util.UUID/fromString userid)
                 name
                 description]))))
 
@@ -43,9 +45,10 @@
 
 (defn read-items
   "Read in all items in the database."
-  [db]
+  [db userid]
   (db/query
    db
    ["SELECT id, name, description, checked_out, date_created
-     FROM items
-     ORDER BY date_created"]))
+     FROM items where user_id = ?
+     ORDER BY date_created"
+    (java.util.UUID/fromString userid)]))

@@ -2,10 +2,10 @@
   (:require [hiccup.page :refer [html5]]
             [hiccup.core :refer [h]]))
 
-(defn new-item []
+(defn new-item [userid]
   (html5
    [:form.form-horizontal
-    {:method "POST" :action "/items"}
+    {:method "POST" :action (str "/users/" userid  "/items")}
     [:div.form-group
      [:label.control-label.col-sm-2 {:for :name-input}
       "Name"]
@@ -26,7 +26,7 @@
        {:type :submit
         :value "New item"}]]]]))
 
-(defn items-page [items]
+(defn items-page [user items]
   (html5 {:lang :en}
          [:head
           [:title "Stuffmaster"]
@@ -37,7 +37,8 @@
          [:body
           [:div.container
            [:div.row
-            [:h1 "My Items"]
+            [:p [:a {:href "/users"} "Users"] " | " (:first_name user)]
+            [:h1 (str (:first_name user) "'s Items")]
             (if (seq items)
               [:table.table.table-striped
                [:thead
@@ -45,13 +46,13 @@
                  [:th "Name"]
                  [:th "Description"]]]
                [:tbody
-                (for [i items]
+                (for [item items]
                   [:tr
-                   [:td (h (:name i))]
-                   [:td (h (:description i))]])]]
+                   [:td (h (:name item))]
+                   [:td (h (:description item))]])]]
               [:div.col-sm-offset-1 "There are no items."])
             [:div.col-sm-6
              [:h2 "Create a new item"]
-             (new-item)]]]
+             (new-item (:id user))]]]
           [:script {:src "https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"}]
           [:script {:src "/bootstrap/js/bootstrap.min.js"}]]))

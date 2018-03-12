@@ -65,12 +65,15 @@
   (GET "/" [] greet)
   (GET "/goodbye" [] goodbye)
   (GET "/about" [] about)
+
   (ANY "/request" [] handle-dump)
+  (ANY "/request/:x" [] handle-dump)
+
   (GET "/yo/:name" [] yo)
   (GET "/calc/:a/:op/:b" [] calc)
 
-  (GET "/items" [] handle-index-items)
-  (POST "/items" [] handle-create-item)
+  (GET "/users/:userid/items" [] handle-index-items)
+  (POST "/users/:userid/items" [] handle-create-item)
 
   (GET "/users" [] handle-index-users)
   (POST "/users" [] handle-create-user)

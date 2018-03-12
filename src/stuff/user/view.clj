@@ -33,6 +33,15 @@
        {:type :submit
         :value "New User"}]]]]))
 
+(defn view-user-items [user]
+  (html5
+   [:form
+    {:method "GET" :action (str "/users/" (:id user) "/items")}
+    [:div.btn-group
+     [:input.btn.btn-primary.btn-xs
+      {:type :submit
+       :value (str "View " (:first_name user) "'s Items")}]]]))
+
 (defn users-page [users]
   (html5 {:lang :en}
          [:head
@@ -51,13 +60,15 @@
                 [:tr
                  [:th "First Name"]
                  [:th "Last Name"]
-                 [:th "Email"]]]
+                 [:th "Email"]]
+                 [:th.col-sm-2]]
                [:tbody
-                (for [u users]
+                (for [user users]
                   [:tr
-                   [:td (h (:first_name u))]
-                   [:td (h (:last_name u))]
-                   [:td (h (:email u))]])]]
+                   [:td (h (:first_name user))]
+                   [:td (h (:last_name user))]
+                   [:td (h (:email user))]
+                   [:td (view-user-items user)]])]]
               [:div.col-sm-offset-1 "There are no users."])
             [:div.col-sm-6
              [:h2 "Create a new user"]

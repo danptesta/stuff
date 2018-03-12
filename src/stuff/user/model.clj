@@ -51,3 +51,14 @@
    ["SELECT id, first_name, last_name, email, active, date_created
      FROM users
      ORDER BY date_created"]))
+
+(defn read-user
+  "Read in the user with the given id."
+  [db id]
+  (first
+   (db/query
+     db
+     ["SELECT id, first_name, last_name, email, active, date_created
+       FROM users
+       WHERE id = ?"
+      (java.util.UUID/fromString id)])))
