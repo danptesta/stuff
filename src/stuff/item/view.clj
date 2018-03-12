@@ -38,7 +38,7 @@
           [:div.container
            [:div.row
             [:p [:a {:href "/users"} "Users"] " | " (:first_name user)]
-            [:h1 (str (:first_name user) "'s Items")]
+            [:h1 (str (:first_name user) "'s Stuff")]
             (if (seq items)
               [:table.table.table-striped
                [:thead

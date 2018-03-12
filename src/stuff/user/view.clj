@@ -40,7 +40,7 @@
     [:div.btn-group
      [:input.btn.btn-primary.btn-xs
       {:type :submit
-       :value (str "View " (:first_name user) "'s Items")}]]]))
+       :value (str "View " (:first_name user) "'s Stuff")}]]]))
 
 (defn users-page [users]
   (html5 {:lang :en}
