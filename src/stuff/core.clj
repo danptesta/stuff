@@ -92,7 +92,7 @@
      "static"))))
 
 (defn -main [port]
- ;; (items/create-table db)
- ;; (users/create-table db)
+  (users/create-table db)
+  (items/create-table db)
   (jetty/run-jetty app
                    {:port (Integer. port)}))
