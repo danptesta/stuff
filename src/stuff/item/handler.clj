@@ -11,8 +11,6 @@
         userid (get-in req [:params :userid])
         user (read-user db userid)
         items (read-items db userid)]
-    (println "===== userid: " userid)
-    (println "===== user: " user)
     {:status 200
      :headers {}
      :body (items-page user items)}))

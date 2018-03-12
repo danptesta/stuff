@@ -14,7 +14,9 @@
             [ring.middleware.reload :refer [wrap-reload]]
             [ring.middleware.resource :refer [wrap-resource]]))
 
-(def db "jdbc:postgresql://localhost/stuff")
+(def db (or
+         (System/getenv "DATABASE_URL")
+         "jdbc:postgresql://localhost/stuff"))
 
 (defn greet [req]
   {:status 200
